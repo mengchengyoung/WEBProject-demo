@@ -1,0 +1,62 @@
+Internal Server Error: /api/trans/test/
+Traceback (most recent call last):
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/sqlite3/base.py", line 383, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such table: Trans_cis_uploadmodel
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/decorators.py", line 55, in handler
+    return func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/views.py", line 46, in upload_file
+    instance.save()
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/base.py", line 741, in save
+    force_update=force_update, update_fields=update_fields)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/base.py", line 779, in save_base
+    force_update, using, update_fields,
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/base.py", line 870, in _save_table
+    result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/base.py", line 908, in _do_insert
+    using=using, raw=raw)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/manager.py", line 82, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/query.py", line 1186, in _insert
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/models/sql/compiler.py", line 1332, in execute_sql
+    cursor.execute(sql, params)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/db/backends/sqlite3/base.py", line 383, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such table: Trans_cis_uploadmodel

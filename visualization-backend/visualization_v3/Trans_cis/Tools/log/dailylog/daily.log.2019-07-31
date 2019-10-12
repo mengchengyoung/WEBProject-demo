@@ -1,0 +1,140 @@
+Internal Server Error: /api/trans/get_trans_cis/
+Traceback (most recent call last):
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/decorators.py", line 55, in handler
+    return func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/views.py", line 111, in Get_trans_cis
+    temp_path = os.path.join(settings.MEDIA_ROOT, "temp", time_suffix)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 193, in get_trans_cis
+    global_setting.read_length = get_readlen(temp_region, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 146, in get_readlen
+    bam = getfinalbam(bamregion, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 49, in getfinalbam
+    cleanbam = b.extract_target_bam(region)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/lib/bam/bam.py", line 12, in extract_target_bam
+    target_bam = inbam.fetch(region_chr, region_begin, region_end)
+  File "pysam/libcalignmentfile.pyx", line 1076, in pysam.libcalignmentfile.AlignmentFile.fetch
+  File "pysam/libchtslib.pyx", line 689, in pysam.libchtslib.HTSFile.parse_region
+ValueError: invalid coordinates: start (55242490) > stop (55242467)
+Internal Server Error: /api/trans/get_trans_cis/
+Traceback (most recent call last):
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/decorators.py", line 55, in handler
+    return func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/views.py", line 111, in Get_trans_cis
+    temp_path = os.path.join(settings.MEDIA_ROOT, "temp", time_suffix)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 193, in get_trans_cis
+    global_setting.read_length = get_readlen(temp_region, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 146, in get_readlen
+    bam = getfinalbam(bamregion, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 49, in getfinalbam
+    cleanbam = b.extract_target_bam(region)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/lib/bam/bam.py", line 12, in extract_target_bam
+    target_bam = inbam.fetch(region_chr, region_begin, region_end)
+  File "pysam/libcalignmentfile.pyx", line 1076, in pysam.libcalignmentfile.AlignmentFile.fetch
+  File "pysam/libchtslib.pyx", line 689, in pysam.libchtslib.HTSFile.parse_region
+ValueError: invalid coordinates: start (55242490) > stop (55242467)
+Internal Server Error: /api/trans/get_trans_cis/
+Traceback (most recent call last):
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/decorators.py", line 55, in handler
+    return func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/views.py", line 111, in Get_trans_cis
+    temp_path = os.path.join(settings.MEDIA_ROOT, "temp", time_suffix)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 193, in get_trans_cis
+    global_setting.read_length = get_readlen(temp_region, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 146, in get_readlen
+    bam = getfinalbam(bamregion, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 49, in getfinalbam
+    cleanbam = b.extract_target_bam(region)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/lib/bam/bam.py", line 12, in extract_target_bam
+    target_bam = inbam.fetch(region_chr, region_begin, region_end)
+  File "pysam/libcalignmentfile.pyx", line 1076, in pysam.libcalignmentfile.AlignmentFile.fetch
+  File "pysam/libchtslib.pyx", line 689, in pysam.libchtslib.HTSFile.parse_region
+ValueError: invalid coordinates: start (55242490) > stop (55242467)
+Internal Server Error: /api/trans/get_trans_cis/
+Traceback (most recent call last):
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/rest_framework/decorators.py", line 55, in handler
+    return func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/SoftWare/Anaconda3-5.3.1/envs/RockMind_V3/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/views.py", line 111, in Get_trans_cis
+    for i, m in enumerate(mutation_dict_list): # i == batch
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 193, in get_trans_cis
+    global_setting.read_length = get_readlen(temp_region, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 146, in get_readlen
+    bam = getfinalbam(bamregion, bamfile, Bam)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/bin/Trans_cis_4web.py", line 49, in getfinalbam
+    cleanbam = b.extract_target_bam(region)
+  File "/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/RockMind/visualization_v3/Trans_cis/Tools/lib/bam/bam.py", line 12, in extract_target_bam
+    target_bam = inbam.fetch(region_chr, region_begin, region_end)
+  File "pysam/libcalignmentfile.pyx", line 1076, in pysam.libcalignmentfile.AlignmentFile.fetch
+  File "pysam/libchtslib.pyx", line 689, in pysam.libchtslib.HTSFile.parse_region
+ValueError: invalid coordinates: start (55242490) > stop (55242467)

@@ -1,0 +1,423 @@
+import sys
+sys.path.append('/annoroad/data1/bioinfo/PMO/yangmengcheng/Work/web/Tool-kit-server/Tools/mutation/lib')
+from bam.bam import Bam
+import os
+import pysam
+import itertools
+import numpy
+import types
+import tempfile
+import re
+import time
+import copy
+
+class Global_setting(object):
+    read_length = 75
+    ref = '/annoroad/data1/bioinfo/PMO/zhoumiao/public/ref/hg19.fa'
+global_setting = Global_setting()
+
+def getref(reg):
+    temp_path= tempfile.gettempdir()
+    random_suffix= str(time.time())
+    bedname = '{}/tmp.{}'.format(temp_path, random_suffix)
+    region = copy.deepcopy(reg)
+    region[1] = str(int(reg[1])-1) # bed is 0-base
+    with open(bedname, 'w') as fp:
+        fp.write('{}\n'.format('\t'.join(region)))
+    tmpref = '{}/tmpref.{}'.format(temp_path, random_suffix)
+    ref='/annoroad/data1/bioinfo/PMO/zhoumiao/public/ref/hg19.fa'
+    if os.path.exists(bedname):
+        os.system('bedtools getfasta -fi {ref} -bed {bed} -fo {targetref}'.format(ref=ref, bed=bedname, targetref=tmpref))
+        os.remove(bedname)
+        if os.path.exists(tmpref):
+            with open(tmpref)  as f:
+                line = f.readline().strip()
+                ref = f.readline().strip()
+                #print(ref)
+            os.remove(tmpref)
+        else:
+            ox._exit('ref file dont exists!')
+    else:
+        os._exit('bed file dont exists!')
+        
+    return [reg, ref]
+
+def rmdup(bam, out):
+    os.system('samtools markdup -r {} {}'.format(bam, out))
+    
+def getfinalbam(region, bam):
+    b = Bam(bam)
+    cleanbam = b.extract_target_bam(region)
+    return cleanbam
+
+class Rebuild():
+    def __init__(self, region_ref,  mutations_dict, neighbour_mutations):
+        self.region = region_ref[0]
+        self.ref = region_ref[1]
+        self.mutations = mutations_dict
+        self.rebuild_dict = {}
+        self.read_length = global_setting.read_length
+        self.neighbour_mutations = neighbour_mutations
+        
+    def Getcombination(self, mutations):
+        mutation_list = mutations
+        combination = []
+        m_len = len(mutation_list)
+        for i in range(1, m_len+1):
+            iteration = itertools.combinations(mutation_list, i)
+            for iter in iteration:
+                mu_list = []
+                for j in iter: 
+                    mu = j.split('_')[0]
+                    if mu in mu_list:
+                        break
+                    else:
+                        mu_list.append(mu)
+                else:
+                    combination.append(iter)
+        ##print(combination)
+        return combination
+     
+    def ref_rebuild(self, mutations, neighbour_mutations):
+        '''
+        mutations 包含各个突变的列表, format:[['snp', 'chr1', '123', ref, alt], [], []....]
+        neighbour_mutations
+        '''
+        mutations = mutations + neighbour_mutations
+        def pos(e):
+            return e[2]
+        mutations.sort(key=pos)
+        #print(mutations)
+        rebuildseq = copy.deepcopy(self.ref)
+        region = self.region
+        insert = 0
+        for i in mutations:  
+            #print(i)
+            pos = int(i[2]) - int(region[1])
+            insert_length = len(i[-1]) - len(i[-2])
+            if i[0] == 'snp':
+                insert_length = 0
+                index = pos + insert
+                rebuildseq = rebuildseq[:index] + i[-1] +rebuildseq[index+1:]
+
+            elif i[0] == 'ins':
+                index = pos + insert
+                alt = i[-1][1:]
+                rebuildseq = rebuildseq[:index+1] + alt + rebuildseq[index+1:]
+
+            elif i[0] == 'del':
+                del_length = abs(insert_length)
+                index = pos + insert
+                rebuildseq = rebuildseq[:index+1] + rebuildseq[index+del_length+1:]
+
+            elif i[0] == 'delneighbour':
+                index = pos + insert
+                alt = i[-2][1:]
+                rebuildseq = rebuildseq[:index+1] + alt + rebuildseq[index+1:]
+                insert_length = abs(len(i[-1]) - len(i[-2])) # del作为insert插入'.', 对插入值取绝对值
+
+            elif i[0] == 'ref':
+                insert_length = 0
+            insert += insert_length
+        #print(self.ref)
+        #print(rebuildseq)
+        return rebuildseq 
+
+    def combine_rebuild(self):
+        mutations = list(self.mutations.keys())
+        mutations.sort() # 按字典排序方便操作
+        combinations = self.Getcombination(mutations)
+        self.rebuild_dict = {}
+        #print('combinations:', combinations)
+        for i in combinations:
+            mutations = [self.mutations[j] for j in i]
+            mutations_key = ':'.join([j for j in i])
+            seq = self.ref_rebuild(mutations, self.neighbour_mutations)
+            self.rebuild_dict[mutations_key] = seq
+        return self.rebuild_dict 
+        
+    def read_cover(self, mutations, alignment):
+        insert = 0
+        for i in mutations:
+            if i[0] != 'ref': # mu_ref的ref/alt碱基不一样长，排除掉，否则会出错
+                insert_length = len(i[-1]) - len(i[-2])
+                insert += insert_length
+        cover = -insert + self.read_length + alignment - 1
+        return [alignment, cover]
+
+    def getseq(self, alignment, cut_length, rebuildseq):
+        index = (int(alignment)) - int(self.region[1]) 
+        end = index + self.read_length
+        seq = ''
+        count = 0 
+        for i in rebuildseq[index:]:
+            if count == cut_length:
+                break
+            elif i == '.':
+                seq += '.?'
+                count+=1
+
+            elif i == '-': # 如果为del则del部分计入截取长度
+                seq += '.?' 
+                count += 1
+
+            elif i == '+': # 如果为insert则insert部分不计入截取长度
+                seq += '.?'
+
+            else:
+                seq += i
+                count+=1
+        return seq
+
+    def check_support_type(self, alignment, clean_length, read_seq):
+        seq = read_seq
+        read_support_type = []
+        invalid_type = []
+        cut_length = clean_length
+        match = 0
+        for i in self.rebuild_dict:
+            p = re.compile(r'{}'.format(self.getseq(alignment, cut_length,  self.rebuild_dict[i])))
+            m = p.match(seq)
+            if m:
+                match += 1
+                mutation_last = i.split(':')[-1] # 突变组合按绝对位置顺序排列,提出最后一个突变
+                mutation_first = i.split(':')[0] # 突变组合按绝对位置顺序排列,提出第一个突变
+                mutation_last_pos = int(self.mutations[mutation_last][2])
+                mutation_first_pos = int(self.mutations[mutation_first][2])
+                 
+                mutation_forward = [self.mutations[j] for j in i.split(':')[:-1]]
+                read_cover = self.read_cover(mutation_forward, alignment)
+
+                if len(self.mutations[mutation_last][-1]) - len(self.mutations[mutation_last][-2]) != 0:
+                    if mutation_first_pos >= read_cover[0] and mutation_last_pos < read_cover[1]:
+                        read_support_type.append(i)
+                    else:
+                        pass
+                else:
+                    if mutation_first_pos >= read_cover[0] and mutation_last_pos <= read_cover[1]:
+                        read_support_type.append(i)
+            else:
+                invalid_type.append(i)
+
+        return read_support_type, match
+
+
+def new_bound(mutations_dict):
+    mutation_keys = list(mutations_dict.keys())
+    mutation_keys.sort()
+    #for i in mutation_keys: # filter read that don't cover
+    first_mutation = mutations_dict[mutation_keys[0]]
+    last_mutation = mutations_dict[mutation_keys[-1]]
+    if first_mutation[0] == "snp":
+        bound_low = int(first_mutation[2]) - global_setting.read_length 
+    else:
+        bound_low = int(first_mutation[2]) - global_setting.read_length + 1 # 顺序第一位突变为indel
+
+    if last_mutation[0] != 'snp': 
+        bound_up = int(last_mutation[2]) + 2  # 若read支持indel，则左端可能存在softclip
+    else:
+        bound_up = int(last_mutation[2]) + 1
+    bound = [bound_low, bound_up]
+    return bound
+
+def findvcf(bamfile):
+    bam_path = bamfile.split('/')
+    sample = bam_path[-3]
+    vcf_file = '{}/Variant/SNP-INDEL_MT/{}.raw.vcf'.format('/'.join(bam_path[:-2]), sample)
+    return vcf_file
+
+def neighbour_mutation(vcf_file, mutation_dict): #通过bamfile路径确定vcf路径， 提出临近突变信息
+    chromosome = list(mutation_dict.values())[0][1]
+    mutations_bed = [i[2] for i in list(mutation_dict.values())]
+    mutations_bed.sort()
+    Neighbour_mutations = []
+    with open(vcf_file) as f:
+        line = f.readline().strip()
+        while line:
+            if not line.startswith('#'):
+                line = line.split('\t')
+                if line[1] in mutations_bed:
+                    line = f.readline().strip()
+                    continue 
+                if (line[0] == chromosome) and  bool(abs(int(line[1]) - int(mutations_bed[0])) < global_setting.read_length or \
+                abs(int(line[1]) - int(mutations_bed[-1])) < global_setting.read_length):
+                    if len(line[3]) == len(line[4]):
+                        t = 'snp'
+                        alt = '.'
+                        ref = line[3]
+
+                    elif len(line[3])>len(line[4]):
+                        t = 'delneighbour'
+                        ref= line[4][0] + '-'*(len(line[3]) - 1)
+                        alt = line[4]
+
+                    else:
+                        t = 'ins'
+                        ref = line[3]
+                        alt = line[3][0] + '+'*(len(line[4]) - 1)
+                    Neighbour_mutations.append([t, line[0], line[1], ref, alt])
+
+            line = f.readline().strip()
+    return Neighbour_mutations
+
+def handle_cigar(readobject, mutationed_pos_sorted):
+    Cigar = readobject.cigarstring
+    reference_start = readobject.reference_start + 1
+    cut_off = reference_start 
+    left_clip = re.search('^([0-9]+)S', Cigar)
+    right_clip = re.search('([0-9]+)S$', Cigar)
+    clean_length = global_setting.read_length
+    pos_sorted = mutationed_pos_sorted
+    alignment = readobject.reference_start + 1 
+    read = readobject.query_sequence
+    left_clip_length = 0
+    right_clip_length = 0
+    if left_clip:
+        left_clip_length = int(left_clip.group(1))
+        clip_region = [reference_start+1-left_clip_length, reference_start]
+                
+        # 若clip区域和突变区域无重合，左clip区域必然在突变区域左侧
+        if reference_start+1 < pos_sorted[-1] and reference_start+1 < pos_sorted[0]:
+                clean_length -= left_clip_length
+                alignment = reference_start
+                read = read[left_clip_length:]
+        else:
+            alignment = reference_start - left_clip_length
+
+    if right_clip:
+        right_clip_length = int(right_clip.group(1))
+
+        # 删除会导致覆盖的区域增大
+        del_length = 0
+        for i in re.findall('([0-9]+)D', Cigar):
+            del_length += int(i)
+
+        # 插入会导致覆盖的区域减小
+        ins_length = 0
+        for i in re.findall('([0-9]+)I', Cigar):
+            ins_length += int(i)
+         
+        read_cover = reference_start + 1 + global_setting.read_length + del_length - ins_length - left_clip_length
+        clip_region = [read_cover - right_clip_length, read_cover]
+        
+        # 若clip区域和突变区域无重合, 右clip区域必然在突变区域的右侧
+        if clip_region[0] > pos_sorted[-1] and clip_region[-1] > pos_sorted[-1]: 
+                clean_length -= right_clip_length
+                read = read[:-right_clip_length]
+        else:
+            pass
+    return alignment, clean_length, read
+
+def get_trans_cis(mutations_dict, bamfile):
+
+    # 按照血液病的原始vcf结果对附近存在的突变容错
+    vcf_file = findvcf(bamfile)
+    Neighbour_mutations = neighbour_mutation(vcf_file, mutations_dict)
+    #print(Neighbour_mutations)
+
+    # 对传入的突变的绝对位置排序，确定目标区域边界
+    pos = [int(i[2]) for i in list(mutations_dict.values()) + Neighbour_mutations ]
+    pos.sort()
+
+    # 任选一个染色体，前端保证传入的染色体相同
+    # 对于有softclip的read, 匹配位置会减掉末端的softclip长度,
+    # 延长几个碱基能保留一些softclip在末端的read，但是会引入无用reads.
+    # 获得目标区域的bam对象，相当于第一步过滤read
+    chromosome = list(mutations_dict.values())[0][1] 
+    bam_region = [chromosome, pos[0]-5, pos[-1]+5]  
+    cleanbam = getfinalbam(bam_region, bamfile)    
+    print([pos[0]-5, pos[-1]+5])
+    # read的比对位置必须满足bound的条件，第二步过滤read
+    bound = new_bound(mutations_dict) 
+
+    # 生成目表区域的参考序列，在突变形成的区域前后各延长100
+    reference_region = [bam_region[0], str(bam_region[1]-100), str(bam_region[2]+100)] 
+    region_ref = getref(reference_region) # bed format is 0-base
+    
+    # 对每个突变生成对应的参考型，改变键（突变代号）和键值第一位
+    keys = list(mutations_dict.keys())  
+    for i in keys:
+        mutation_ref_key = i+'_ref'
+        mutation_ref_value = copy.deepcopy(mutations_dict[i])
+        mutation_ref_value[0] = 'ref'
+        mutations_dict[mutation_ref_key] = mutation_ref_value
+
+    # 将参考序列按照可能的突变组合，重新生成参考序列
+    R = Rebuild(region_ref, mutations_dict, Neighbour_mutations) 
+    R.combine_rebuild()                        
+    #exit()
+    results_final = {} # reads that to be output
+    invalid_count = 0
+    template_header = pysam.AlignmentFile(bamfile, 'rb')
+    valided_bam = pysam.AlignmentFile('./valided.bam', 'wb', template=template_header)
+    invalided_bam = pysam.AlignmentFile('./invalided.bam', 'wb', template=template_header)
+    target_bamout = pysam.AlignmentFile('./target.bam', 'wb', template=template_header)
+    for i in cleanbam:
+        #target_bamout.write(i)
+        '''
+        if i.reference_start+1 > bound[0] and i.reference_start+1 < bound[1]: # reference_start为bam的0-base
+            pass
+        else:
+            invalided_bam.write(i)
+            continue
+        '''
+        ''' 
+        if i.reference_start == 110233098:
+            pass
+        else:
+            continue
+        '''
+        if i.is_duplicate:
+            continue
+        alignment , clean_length, read= handle_cigar(i, pos)
+        #print(alignment, clean_length, i.cigarstring)
+        #print(read)
+        result, match = R.check_support_type(alignment, clean_length, read)
+        if result:
+            #print(alignment, clean_length, i.cigarstring)
+            #print(read)
+            #if not match:
+            #    invalided_bam.write(i)
+            #else:
+            valided_bam.write(i)
+            for r in result:
+                results_final.setdefault(r, []).append(i)
+                if r == 'm2':
+                    target_bamout.write(i)
+        else:
+            invalided_bam.write(i)
+            invalid_count += 1
+            print(i.query_name, i.reference_start+1, i.query_sequence, i.cigarstring)
+    #print("invalid count: {}".format(invalid_count))
+    valided_bam.close()
+    invalided_bam.close()
+    target_bamout.close()
+    os.system('samtools index -b {}'.format('valided.bam'))
+    os.system('samtools index -b {}'.format('invalided.bam'))
+    os.system('samtools index -b {}'.format('target.bam'))
+    if results_final:
+        out = open('./tmp.result', 'w')
+        for r in results_final:
+            print("support {}:{}".format(r, len(results_final[r]) ))
+            for j in results_final[r]:
+                out.write("{}\t{}\t{}\t{}\n".format(j.query_name, j.reference_start+1, j.query_sequence, r))
+        out.close()
+    return invalid_count
+
+if __name__ == '__main__':
+    '''
+    test_dict = {'m1':['snp', 'chr7', '50450338', 'A', 'C'],
+                'm2':['ins', 'chr7', '50450341', 'C', 'C***'],
+                'm3':['ins', 'chr7', '50450343', 'A', 'A*****']
+                }
+    '''
+    test_dict = {#'m1':['del', 'chr11', '32417914', 'GTAC', 'G'], #m1,m2按绝对位置对应数字下标
+            #'m2':['ins', 'chr11', '32417917', 'C', 'CGG'],
+            'm1':['snp', 'chr1', '110233115', 'C', 'A'],
+            'm2':['snp', 'chr1', '110233118', 'C', 'A'],
+            }
+    bamfile = '/annoroad/data1/bioinfo/PROJECT/Commercial/Medical/Leukemia/data/Commercial_V3/HB_748_2019052409320051/result/HB15ANKX00178-1-I7/Alignment/HB15ANKX00178-1-I7.uniq.bam'
+    #vcf = findvcf(bamfile)
+    #print(neighbour_mutation(vcf, test_dict))
+    #global_setting = Global_setting()
+    get_trans_cis(test_dict, bamfile)
